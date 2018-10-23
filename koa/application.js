@@ -1,14 +1,14 @@
 const http = require('http');
 const EventEmitter = require('events');
+const convert = require('koa-convert');
 
 const context = require('./context');
 const request = require('./request');
 const response = require('./response');
 
 function compose(middlewares, ctx) {
-  const length = middlewares;
   const dispatch = index => {
-    if (index === length - 1) {
+    if (index === middlewares.length) {
       return Promise.resolve();
     }
     const fn = middlewares[index];
@@ -34,7 +34,15 @@ class Koa extends EventEmitter {
   }
 
   use(fn) {
-    this.middlewares.push(fn);
+    let middleware = fn;
+    if (typeof fn !== 'function') {
+      throw new Error('middleware must be a function!');
+    }
+    // 如果使用generator函数，使用co库转化
+    if (fn.constructor.name === 'GeneratorFunction') {
+      middleware = convert(fn);
+    }
+    this.middlewares.push(middleware);
   }
 
   /* eslint-disable */
@@ -83,8 +91,8 @@ class Koa extends EventEmitter {
     } else if (typeof ctx.body === 'string' || Buffer.isBuffer(ctx.body)) {
       res.setHeader('Content_Type', 'text/html;charset=utf8');
       res.end(ctx.body);
-    } else {
-      // res.end('Not found');
+    } else if (ctx.status === 404) {
+      res.end('Not found');
     }
   }
 
@@ -92,6 +100,7 @@ class Koa extends EventEmitter {
     // 放入上面的回调
     const server = http.createServer(this.handleRequest.bind(this));
     server.listen(...args);
+    return server;
   }
 }
 module.exports = Koa;
