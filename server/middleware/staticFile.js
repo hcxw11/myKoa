@@ -11,7 +11,7 @@ module.exports = async (ctx, next) => {
       ctx.status = 200;
       await send(ctx.req, filePath).pipe(ctx.res);
     } catch (e) {
-      throw new Error('文件解析失败');
+      ctx.throw('文件解析失败', 500);
     }
   } else {
     next();

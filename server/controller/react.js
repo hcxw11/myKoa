@@ -17,8 +17,7 @@ module.exports = {
       $('#root').html(componentHtml);
       ctx.body = $.html();
     } catch (e) {
-      ctx.status = 500;
-      ctx.body = e.stack;
+      ctx.throw(e.stack, 500);
     }
   },
 };

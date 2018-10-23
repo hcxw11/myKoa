@@ -78,10 +78,8 @@ class Koa extends EventEmitter {
         ctx
       );
     } catch (e) {
-      const { stack } = e;
-      ctx.body = stack;
-      console.log(stack);
-      ctx.response.status = 500;
+      console.log(e.stack);
+      ctx.throw(e.stack, 500);
     }
 
     if (typeof ctx.body === 'object') {
