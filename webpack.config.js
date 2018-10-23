@@ -2,7 +2,7 @@ const path = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-var assetsPath = path.join(__dirname, 'public', 'assets');
+let assetsPath = path.join(__dirname, 'public', 'assets');
 // var serverPath = path.join(__dirname, 'server');
 
 module.exports = {

@@ -1,5 +1,5 @@
 module.exports = {
-  hello: function(ctx) {
+  hello(ctx) {
     ctx.body = 'hello';
   },
 };

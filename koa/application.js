@@ -5,7 +5,26 @@ const context = require('./context');
 const request = require('./request');
 const response = require('./response');
 
-class App extends EventEmitter {
+function compose(middlewares, ctx) {
+  const length = middlewares;
+  const dispatch = index => {
+    if (index === length - 1) {
+      return Promise.resolve();
+    }
+    const fn = middlewares[index];
+    if (!fn) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      try {
+        resolve(fn(ctx, dispatch.bind(null, index + 1)));
+      } catch (e) {
+        reject(e);
+      }
+    });
+  };
+  return dispatch(0);
+}
+
+class Koa extends EventEmitter {
   constructor() {
     super();
     this.middlewares = [];
@@ -13,9 +32,12 @@ class App extends EventEmitter {
     this.request = request;
     this.response = response;
   }
+
   use(fn) {
     this.middlewares.push(fn);
   }
+
+  /* eslint-disable */
   createContext(req, res) {
     // 使用Object.create方法是为了继承this.context但在增加属性时不影响原对象
     const ctx = Object.create(this.context);
@@ -29,26 +51,8 @@ class App extends EventEmitter {
     response.request = request;
     return ctx;
   }
-  compose(middlewares, ctx) {
-    const length = middlewares;
-    const dispatch = index => {
-      if (index === length - 1) {
-        new Promise.resolve();
-      }
-      const fn = middlewares[index];
-      if (!fn) return Promise.resolve();
+  /* eslint-enable */
 
-      return new Promise((resolve, reject) => {
-        try {
-          resolve(fn(ctx, dispatch.bind(null, index + 1)));
-        } catch (e) {
-          reject(e);
-        }
-      });
-    };
-
-    return dispatch(0);
-  }
   async handleRequest(req, res) {
     res.statusCode = 404;
     const ctx = this.createContext(req, res);
@@ -61,7 +65,7 @@ class App extends EventEmitter {
     }
 
     try {
-      await this.compose(
+      await compose(
         middlewares,
         ctx
       );
@@ -83,10 +87,11 @@ class App extends EventEmitter {
       // res.end('Not found');
     }
   }
+
   listen(...args) {
     // 放入上面的回调
     const server = http.createServer(this.handleRequest.bind(this));
     server.listen(...args);
   }
 }
-module.exports = App;
+module.exports = Koa;

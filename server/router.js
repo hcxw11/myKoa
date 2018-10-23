@@ -3,16 +3,17 @@ function pathRegexp(path) {
 }
 class Router {
   constructor() {
-    this._list = [];
+    this.list = [];
     ['get', 'put', 'delete', 'post'].forEach(method => {
-      this._list[method] = [];
-      this[method] = function(path, action) {
-        this._list[method].push([pathRegexp(path), action]);
+      this.list[method] = [];
+      this[method] = (path, action) => {
+        this.list[method].push([pathRegexp(path), action]);
       };
     });
   }
+
   matchPath(pathname, method) {
-    const routers = this._list[method];
+    const routers = this.list[method];
     let handler;
     routers.some(router => {
       const [reg, action] = router;
@@ -20,6 +21,7 @@ class Router {
         handler = action;
         return true;
       }
+      return false;
     });
     return handler;
   }
