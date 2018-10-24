@@ -24,6 +24,20 @@ function compose(middlewares, ctx) {
   return dispatch(0);
 }
 
+function respond(ctx) {
+  const { res } = ctx;
+  if (typeof ctx.body === 'object') {
+    // 如果是对象
+    res.setHeader('Content-Type', 'application/json;charset=utf8');
+    res.end(JSON.stringify(ctx.body));
+  } else if (typeof ctx.body === 'string' || Buffer.isBuffer(ctx.body)) {
+    res.setHeader('Content_Type', 'text/html;charset=utf8');
+    res.end(ctx.body);
+  } else if (ctx.status === 404) {
+    res.end('Not found');
+  }
+}
+
 class Koa extends EventEmitter {
   constructor() {
     super();
@@ -77,20 +91,10 @@ class Koa extends EventEmitter {
         middlewares,
         ctx
       );
+      respond(ctx);
     } catch (e) {
       console.log(e.stack);
       ctx.throw(e.stack, 500);
-    }
-
-    if (typeof ctx.body === 'object') {
-      // 如果是对象
-      res.setHeader('Content-Type', 'application/json;charset=utf8');
-      res.end(JSON.stringify(ctx.body));
-    } else if (typeof ctx.body === 'string' || Buffer.isBuffer(ctx.body)) {
-      res.setHeader('Content_Type', 'text/html;charset=utf8');
-      res.end(ctx.body);
-    } else if (ctx.status === 404) {
-      res.end('Not found');
     }
   }
 

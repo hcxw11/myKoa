@@ -6,15 +6,19 @@ const context = {
 };
 
 function defineGetter(prop, name) {
-  // eslint-disable-next-line
-  context.__defineGetter__(name, function() {
-    return this[prop][name];
+  Object.defineProperty(context, name, {
+    get() {
+      return this[prop][name];
+    },
+    configurable: true,
   });
 }
 function defineSetter(prop, name) {
-  // eslint-disable-next-line
-  context.__defineSetter__(name, function(value) {
-    this[prop][name] = value;
+  Object.defineProperty(context, name, {
+    set(value) {
+      this[prop][name] = value;
+    },
+    configurable: true,
   });
 }
 

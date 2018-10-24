@@ -21,7 +21,8 @@
   "scripts": {
     "test": "jest",
     "start": "webpack && babel-node server/index.js",
-    "build": "webpack"
+    "build": "webpack",
+    "debug": "webpack && babel-node --nolazy --inspect=9229 server/index.js"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
