@@ -65,7 +65,7 @@
 
 修改`.vscode/launch.json`，添加配置
 
-![Untitled2](/Users/wuxincheng/Desktop/project/node/react-node/image/debug.gif)
+![debug](image/debug.gif)
 
 ```json
 {
