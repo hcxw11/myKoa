@@ -16,7 +16,7 @@
     "koa-convert": "^1.2.0",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
-    "serve-static": "^1.13.2"
+    "send": "^0.16.2"
   },
   "scripts": {
     "test": "jest",

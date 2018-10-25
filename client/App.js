@@ -4,7 +4,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      count: 1,
+      count: props.initialCount,
     };
     this.increment = this.increment.bind(this);
   }
